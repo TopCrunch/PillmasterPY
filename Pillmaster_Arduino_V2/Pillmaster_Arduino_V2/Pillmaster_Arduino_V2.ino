@@ -2,7 +2,8 @@
 #include <MultiStepper.h>
 /*
 PillMaster Stepper Program
-  running through DRV8833
+  running through A4988 driver board
+  NEMA 17 17he08 stepper motors
   Full rotation is 200 steps
 */
 #define STEPS 200
@@ -11,7 +12,8 @@ PillMaster Stepper Program
 #define MEDIUM_OPENING_STEPS 20
 #define DEFAULT_SPEED 100
 
-//flags are 
+//flags are organized by 0x<commandflag><canisterflag>
+//0x58 (ascii 'X') is operate (0x5) canister d (0x8)
 const unsigned char mainFlag = 0x1;
 const unsigned char revFlag = 0x4;
 const unsigned char adjFlag = 0x3;
