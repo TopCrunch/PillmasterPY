@@ -16,6 +16,7 @@ else:
 ary = [0] * 10
 sel = [''] * 5
 mptr = 0
+lastByte = 0;
 altPressed = False
 
 PAD_MTR = 5
@@ -25,7 +26,9 @@ PAD_ADJ = 48
 PAD_REV = 64
 
 def operate(x):
+    global lastByte
     ser.write(chr(mptr+PAD_MTR+x).encode('utf-8'))
+    lastByte = mptr+PAD_MTR+x
 
 def incptr():
     global mptr
@@ -135,6 +138,7 @@ def loadASCII():
     else:
         print('|   E_BTM  |  ' + str(ary[9]).zfill(3) +'  |')
     print('====================\n')
+    print(lastByte, '\n')
 
 loadASCII()
 
