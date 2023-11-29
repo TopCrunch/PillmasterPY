@@ -1,2 +1,2 @@
 # PillmasterPY
-Pillmaster python repository for server code
+Pillmaster python and arduino repository
