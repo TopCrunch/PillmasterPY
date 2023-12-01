@@ -79,11 +79,12 @@ AccelStepper ajStepper2(AccelStepper::DRIVER, stepPinAdj2, dirPinAdj2);
 void setup() {
   Serial.begin(9600);
   weightSetup();
+  delay(2000);
   //enable pins
   pinMode(A5, OUTPUT);
   pinMode(A4, OUTPUT);
-  pinMode(A3, INPUT);
-  pinMode(A2, OUTPUT);
+  //pinMode(A3, INPUT);
+  //pinMode(A2, OUTPUT);
   pinMode(A1, OUTPUT);
   pinMode(A0, OUTPUT);
 
