@@ -62,6 +62,8 @@ const int tripPin = A4;
 
 unsigned char currentMotor = aflag;
 
+static boolean readValue = false;
+
 long positionA = 0;
 long positionB = 0;
 long positionC = 0;
@@ -79,7 +81,6 @@ AccelStepper ajStepper2(AccelStepper::DRIVER, stepPinAdj2, dirPinAdj2);
 void setup() {
   Serial.begin(9600);
   weightSetup();
-  delay(2000);
   //enable pins
   pinMode(A5, OUTPUT);
   pinMode(A4, OUTPUT);
@@ -121,61 +122,16 @@ void weightSetup() {
     //complete
     Serial.println(1);
   }
+  delay(2000);
+}
+
+void getWeightValue() {
+  Serial.print("Value = ");
+  Serial.print(LoadCell.getData());
 }
 
 void readWeight() {
-  static boolean newDataReady = false;
-  const int interval = 0;
-  while (true) {
-    if (LoadCell.update()) {
-      newDataReady = true;
-    }
-    if (newDataReady) {  //for smoothing out load cell data
-      if (millis() > time + interval) {
-        float d = LoadCell.getData();
-        Serial.print("Load cell output value: ");
-        Serial.println(d);
-        newDataReady = 0;
-        time = millis();
-      }
-    }
-  }
-  /*
-  static boolean jump = false;
-  static boolean newDataReady = false;
-  static boolean done = false;
-  const int interval = 0;
-  int readCount = 0;
-  float data = 0;
-  float lastData = LoadCell.getData();
-  while (done == false) {
-    if (LoadCell.update()) {
-      newDataReady = true;
-    }
-    float value;
-    if ((millis() > time + interval) && newDataReady) {
-      value = LoadCell.getData();
-      Serial.println(value);
-      if (jump == true) {
-        if (value - lastData <= 0.01) {
-          for (int i = 0; i < 10; i++) {
-            data += value;
-            readCount++;
-          }
-          done = true;
-        }
-        lastData = value;
-      }
-      if (value - lastData >= 0.1 && jump == false) {
-        jump = true;
-        lastData = value;
-      }
-      newDataReady = false;
-      time = millis();
-    }
-  }
-  Serial.println(data/10);
-  */
+  LoadCell.update();
 }
 
 /*
@@ -273,7 +229,7 @@ void updateTarget(unsigned char flag, unsigned char canister) {
     }
   } else if (canister == altflag) {
     if (flag == weightflag) {
-      readWeight();
+      getWeightValue();
     }
   }
 }
