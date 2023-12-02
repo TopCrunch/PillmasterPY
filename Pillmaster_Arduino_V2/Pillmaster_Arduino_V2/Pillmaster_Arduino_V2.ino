@@ -31,7 +31,7 @@ const unsigned char aflag = 0x5;
 
 const unsigned char altflag = 0x4;
 const unsigned char weightflag = 0x4;
-const unsigned char tripFlag = 0x5;
+const unsigned char tripflag = 0x5;
 
 const int max_operations = 6;
 const int operation_medium_main[] = { 0, -50, 0, 0, 0, 50 };
@@ -59,6 +59,7 @@ const int weightPinDT = A2;
 const int weightPinSCK = A3;
 
 const int tripPin = A4;
+int sensorValue = 0;
 
 unsigned char currentMotor = aflag;
 
@@ -83,7 +84,7 @@ void setup() {
   weightSetup();
   //enable pins
   pinMode(A5, OUTPUT);
-  pinMode(A4, OUTPUT);
+  //pinMode(A4, OUTPUT);
   //pinMode(A3, INPUT);
   //pinMode(A2, OUTPUT);
   pinMode(A1, OUTPUT);
@@ -97,6 +98,13 @@ void setup() {
 
 
   swapMotor(aflag);
+}
+
+void lightSensor(){
+  sensorValue = analogRead(tripPin); // read the value from the sensor
+  Serial.println(sensorValue); //prints the values coming from the sensor on the screen
+  delay(100);
+
 }
 
 HX711_ADC LoadCell(weightPinDT, weightPinSCK);
@@ -120,14 +128,14 @@ void weightSetup() {
   } else {
     LoadCell.setCalFactor(calibrationValue);
     //complete
-    Serial.println(1);
+    Serial.println("D");
   }
   delay(2000);
 }
 
 void getWeightValue() {
-  Serial.print("Value = ");
-  Serial.print(LoadCell.getData());
+  Serial.print("#");
+  Serial.println(LoadCell.getData());
 }
 
 void readWeight() {
@@ -198,7 +206,6 @@ void updateTarget(unsigned char flag, unsigned char canister) {
       ajStepper2.move(-MANUAL_STEPS);
       resetSpeed();
     } else if (flag == revFlag) {
-      Serial.print("here");
       mnStepper2.move(-MANUAL_STEPS);
       ajStepper2.move(MANUAL_STEPS);
       resetSpeed();
@@ -230,6 +237,8 @@ void updateTarget(unsigned char flag, unsigned char canister) {
   } else if (canister == altflag) {
     if (flag == weightflag) {
       getWeightValue();
+    } else if(flag == tripflag) {      
+      //lightSensor();
     }
   }
 }
@@ -251,7 +260,7 @@ void readInstructions() {
       }
     }
   }
-  Serial.println("1");
+  Serial.println("Done");
 }
 
 void readInstructions2() {
@@ -272,7 +281,7 @@ void readInstructions2() {
       }
     }
   }
-  Serial.println("1");
+  Serial.println("Done");
 }
 
 void loop() {
