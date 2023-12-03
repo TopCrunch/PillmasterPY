@@ -18,11 +18,19 @@ PillMaster Stepper Program
 
 //flags are organized by 0x<commandflag><canisterflag>
 //0x58 (ascii 'X') is operate (0x5) canister d (0x8)
+
+//commands
 const unsigned char mainFlag = 0x1;
 const unsigned char revFlag = 0x4;
 const unsigned char adjFlag = 0x3;
 const unsigned char bothFlag = 0x2;
 const unsigned char operateFlag = 0x5;
+
+const unsigned char readyflag = 0x3;
+const unsigned char weightflag = 0x4;
+const unsigned char tripflag = 0x5;
+
+//canisters
 const unsigned char eflag = 0x9;
 const unsigned char dflag = 0x8;
 const unsigned char cflag = 0x7;
@@ -30,8 +38,6 @@ const unsigned char bflag = 0x6;
 const unsigned char aflag = 0x5;
 
 const unsigned char altflag = 0x4;
-const unsigned char weightflag = 0x4;
-const unsigned char tripflag = 0x5;
 
 const int max_operations = 6;
 const int operation_medium_main[] = { 0, -50, 0, 0, 0, 50 };
@@ -128,7 +134,7 @@ void weightSetup() {
   } else {
     LoadCell.setCalFactor(calibrationValue);
     //complete
-    Serial.println("D");
+    Serial.println();
   }
   delay(2000);
 }
@@ -238,7 +244,9 @@ void updateTarget(unsigned char flag, unsigned char canister) {
     if (flag == weightflag) {
       getWeightValue();
     } else if(flag == tripflag) {      
-      //lightSensor();
+      lightSensor();
+    } else if(flag == readyflag) {
+      Serial.println("R");
     }
   }
 }
@@ -260,6 +268,7 @@ void readInstructions() {
       }
     }
   }
+  delay(3000);
   Serial.println("Done");
 }
 
@@ -281,6 +290,7 @@ void readInstructions2() {
       }
     }
   }
+  delay(3000);
   Serial.println("Done");
 }
 
