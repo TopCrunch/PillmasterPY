@@ -66,10 +66,15 @@ const int weightPinSCK = A3;
 
 const int tripPin = A4;
 int sensorValue = 0;
+int sensTripTimes = 0;
 
 unsigned char currentMotor = aflag;
 
 static boolean readValue = false;
+
+static boolean tripCheck = false;
+
+static boolean tripMultiCheck = false;
 
 long positionA = 0;
 long positionB = 0;
@@ -107,10 +112,17 @@ void setup() {
 }
 
 void lightSensor(){
-  sensorValue = analogRead(tripPin); // read the value from the sensor
-  Serial.println(sensorValue); //prints the values coming from the sensor on the screen
-  delay(100);
-
+  sensorValue = analogRead(tripPin);
+  //Serial.println(sensorValue);
+  if (sensorValue < 127){
+    //Serial.println(sensorValue);
+    tripCheck = true;
+  }
+  if (sensorValue >= 140 && tripCheck == true){
+    tripMultiCheck = true;
+    sensTripTimes++;
+    tripCheck = false;
+  }
 }
 
 HX711_ADC LoadCell(weightPinDT, weightPinSCK);
@@ -139,9 +151,31 @@ void weightSetup() {
   delay(2000);
 }
 
+void getLSValue(){ 
+  if (tripMultiCheck == true){
+    Serial.print("@");
+    Serial.println(sensTripTimes);
+    tripMultiCheck = false;
+    sensTripTimes = 0;
+  }
+  else{
+    Serial.println("@0");
+  }
+
+}
+
 void getWeightValue() {
   Serial.print("#");
   Serial.println(LoadCell.getData());
+  /*if (tripMultiCheck == true){
+    Serial.print("Tripwire tripped this many times: ");
+    Serial.println(sensTripTimes);
+    tripMultiCheck = false;
+    sensTripTimes = 0;
+  }
+  else{
+    Serial.println("Tripwire not tripped");
+  }*/
 }
 
 void readWeight() {
@@ -244,10 +278,10 @@ void updateTarget(unsigned char flag, unsigned char canister) {
     if (flag == weightflag) {
       getWeightValue();
     } else if(flag == tripflag) {      
-      lightSensor();
+      getLSValue();
     } else if(flag == readyflag) {
       Serial.println("R");
-    }
+    } 
   }
 }
 void readInstructions() {
@@ -268,6 +302,7 @@ void readInstructions() {
       }
     }
   }
+  LoadCell.tare();
   delay(3000);
   Serial.println("Done");
 }
@@ -304,6 +339,7 @@ void loop() {
     updateTarget(flags, canister);
   }
   readWeight();
+  lightSensor();
   mnStepper.runSpeedToPosition();
   ajStepper.runSpeedToPosition();
   mnStepper2.runSpeedToPosition();
